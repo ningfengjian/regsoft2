@@ -1,0 +1,3 @@
+D:\BaiduYunDownload\SoftReg\obj\Release\SoftReg.Form1.resources
+D:\BaiduYunDownload\SoftReg\obj\Release\SoftReg.Properties.Resources.resources
+D:\BaiduYunDownload\SoftReg\obj\Release\SoftReg.csproj.GenerateResource.Cache
