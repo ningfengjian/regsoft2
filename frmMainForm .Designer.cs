@@ -37,6 +37,7 @@
             this.RB_yk = new System.Windows.Forms.RadioButton();
             this.RB_mg = new System.Windows.Forms.RadioButton();
             this.RB_sh = new System.Windows.Forms.RadioButton();
+            this.label3 = new System.Windows.Forms.Label();
             this.MachineCode.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -57,7 +58,7 @@
             this.skinButton1.ControlState = CCWin.SkinClass.ControlState.Normal;
             this.skinButton1.DownBack = global::SoftReg.Properties.Resources.SkinButtonDownBack;
             this.skinButton1.DrawType = CCWin.SkinControl.DrawStyle.Img;
-            this.skinButton1.Location = new System.Drawing.Point(180, 161);
+            this.skinButton1.Location = new System.Drawing.Point(167, 178);
             this.skinButton1.MouseBack = global::SoftReg.Properties.Resources.SkinButtonMouseBack;
             this.skinButton1.Name = "skinButton1";
             this.skinButton1.NormlBack = global::SoftReg.Properties.Resources.SkinButtonNormlBack;
@@ -156,11 +157,21 @@
             this.RB_sh.Text = "搜狐";
             this.RB_sh.UseVisualStyleBackColor = true;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(75, 240);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(299, 12);
+            this.label3.TabIndex = 13;
+            this.label3.Text = "说明：账号一人一个账号，账号每5小时只能领取一次！";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(460, 236);
+            this.ClientSize = new System.Drawing.Size(460, 282);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.RB_sh);
             this.Controls.Add(this.RB_mg);
             this.Controls.Add(this.RB_yk);
@@ -189,6 +200,7 @@
         private System.Windows.Forms.RadioButton RB_yk;
         private System.Windows.Forms.RadioButton RB_mg;
         private System.Windows.Forms.RadioButton RB_sh;
+        private System.Windows.Forms.Label label3;
     }
 }
 

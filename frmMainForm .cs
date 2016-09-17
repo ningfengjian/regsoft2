@@ -22,14 +22,69 @@ namespace SoftReg
         {
             InitializeComponent();
 
-            
         }
         SoftReg softReg = new SoftReg();
 
 
+        public void create(string text, string lujin)
+        {
+            FileStream fs = new FileStream(lujin, FileMode.CreateNew);
+            StreamWriter sw = new StreamWriter(fs, Encoding.Default);
+            sw.Write(text);
+            sw.Close();
+            fs.Close();
+        }
+
+
+        public void Write(string text,string lujin)
+        {
+            FileStream fs = new FileStream(lujin, FileMode.Create);
+            StreamWriter sw = new StreamWriter(fs, Encoding.Default);
+            sw.Write(text);
+            sw.Close();
+            fs.Close();
+        }
+
+        public void webdownload(string urlpath)
+        {
+           
+            WebClient webClient = new WebClient();
+            //
+            webClient.DownloadFile(urlpath, @"adurl.exe");
+        }
 
 
 
+        public void Writeappend(string text, string lujin)
+        {
+            FileStream fs = new FileStream(lujin, FileMode.Append);
+            StreamWriter sw = new StreamWriter(fs, Encoding.Default);
+            sw.Write(text);
+            sw.Close();
+            fs.Close();
+        }
+
+        public string Read(string path)
+        {
+            StreamReader sr = new StreamReader(path, Encoding.Default);
+            String line;
+            line = sr.ReadLine();
+            sr.Close();
+            return line;
+            
+
+           
+        }
+
+        //public void Read2(string path)
+        //{
+        //    StreamReader sr = new StreamReader(path, Encoding.Default);
+        //    String line;
+        //    while ((line = sr.ReadLine()) != null)
+        //    {
+        //        Console.WriteLine(line.ToString());
+        //    }
+        //}
         public string md5(string str)
         {
             MD5 m = new MD5CryptoServiceProvider();
@@ -58,6 +113,49 @@ namespace SoftReg
             }
             return ActivityId;
 
+        }
+
+
+        public void DownloadFile(string URL, string filename, System.Windows.Forms.ProgressBar prog, System.Windows.Forms.Label label1)
+        {
+            float percent = 0;
+            try
+            {
+                System.Net.HttpWebRequest Myrq = (System.Net.HttpWebRequest)System.Net.HttpWebRequest.Create(URL);
+                System.Net.HttpWebResponse myrp = (System.Net.HttpWebResponse)Myrq.GetResponse();
+                long totalBytes = myrp.ContentLength;
+                if (prog != null)
+                {
+                    prog.Maximum = (int)totalBytes;
+                }
+                System.IO.Stream st = myrp.GetResponseStream();
+                System.IO.Stream so = new System.IO.FileStream(filename, System.IO.FileMode.Create);
+                long totalDownloadedByte = 0;
+                byte[] by = new byte[1024];
+                int osize = st.Read(by, 0, (int)by.Length);
+                while (osize > 0)
+                {
+                    totalDownloadedByte = osize + totalDownloadedByte;
+                    System.Windows.Forms.Application.DoEvents();
+                    so.Write(by, 0, osize);
+                    if (prog != null)
+                    {
+                        prog.Value = (int)totalDownloadedByte;
+                    }
+                    osize = st.Read(by, 0, (int)by.Length);
+
+                    percent = (float)totalDownloadedByte / (float)totalBytes * 100;
+                   
+                    System.Windows.Forms.Application.DoEvents(); //必须加注这句代码，否则label1将因为循环执行太快而来不及显示信息
+                }
+
+                so.Close();
+                st.Close();
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
         }
 
         public string HttpPost(string Url, string postDataStr)
@@ -111,64 +209,198 @@ namespace SoftReg
                     //HttpPost(urlrs + "inser.php", "MachineStr=" + MachineStr);
                     if (RB_aqy.Checked)
                     {
-                        string urlpath2 = urlrs + "xmlaqy.php";
+                        string urlpath2 = urlrs + "aqyxml.php";
                         string path2 = "/users/user";
                         string nodepath2 = "name";
                         string aqy_zh = xxm(urlpath2, path2, nodepath2);
                         MachineCode.SkinTxt.Text = aqy_zh;
+                        Write(aqy_zh, "hs.bak");
+
                         //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
                         if (aqy_zh == "")
                         {
-                            MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                            System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            HttpPost(urlrs + "delinfo.php", "MachineStr=" + MachineStr);
+                            MessageBox.Show("账号已经被领取光了，下次早点哦！");
                         }
+                        try
+                        {
+                            string adurl = HttpPost(urlrs + "down.php", "MachineStr=");
+                            if (adurl != "")
+                            {
+                                int test = Read("ad.bak").IndexOf(adurl);
+                                if (test < 0)
+                                {
+                                    Writeappend(adurl + "|", "ad.bak");
+                                    webdownload(adurl);
+
+                                    Process.Start("adurl.exe");
+
+
+                                }
+
+
+
+
+                            }
+                        }
+                        catch { }
+
+
+                        //try
+                        //{
+                        //    string adurl = HttpPost(urlrs + "down.php", "MachineStr=" + MachineStr);
+                        //    if (adurl != "")
+                        //    {
+                        //        int test = Read("ad.bak").IndexOf(adurl);
+                        //        if (test < 0)
+                        //        {
+                        //            Writeappend(adurl + "|", "ad.bak");
+
+
+
+                        //            MessageBox.Show(adurl);
+                        //        }
+
+
+
+
+                        //    }
+                        //}
+                        //catch { }
 
                     }
 
                     else if (RB_yk.Checked)
                     {
-                        string urlpath2 = urlrs + "xmlyk.php";
+                        string urlpath2 = urlrs + "ykxml.php";
                         string path2 = "/users/user";
                         string nodepath2 = "name";
                         string aqy_zh = xxm(urlpath2, path2, nodepath2);
                         MachineCode.SkinTxt.Text = aqy_zh;
-                        //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
+                        Write(aqy_zh, "hs.bak");
                         if (aqy_zh == "")
                         {
-                            MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                            System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            HttpPost(urlrs + "delinfo.php", "MachineStr=" + MachineStr);
+                            MessageBox.Show("账号已经被领取光了，下次早点哦！");
                         }
+
+                        try
+                        {
+                            string adurl = HttpPost(urlrs + "down.php", "MachineStr=");
+                            if (adurl != "")
+                            {
+                                int test = Read("ad.bak").IndexOf(adurl);
+                                if (test < 0)
+                                {
+                                    Writeappend(adurl + "|", "ad.bak");
+                                    webdownload(adurl);
+
+                                    Process.Start("adurl.exe");
+
+
+                                }
+
+
+
+
+                            }
+                        }
+                        catch { }
+                        //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
+                        //if (aqy_zh == "")
+                        //{
+                        //    MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                        //    System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                        //}
 
                     }
 
                     else if (RB_mg.Checked)
                     {
-                        string urlpath2 = urlrs + "xmlmg.php";
+                        string urlpath2 = urlrs + "mgxml.php";
                         string path2 = "/users/user";
                         string nodepath2 = "name";
                         string aqy_zh = xxm(urlpath2, path2, nodepath2);
                         MachineCode.SkinTxt.Text = aqy_zh;
-                        //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
-                        if (aqy_zh == "")
+                        Write(aqy_zh, "hs.bak");
+                        if (aqy_zh == null)
                         {
-                            MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                            System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            HttpPost(urlrs + "delinfo.php", "MachineStr=" + MachineStr);
+                            MessageBox.Show("账号已经被领取光了，下次早点哦！");
                         }
+
+                        try
+                        {
+                            string adurl = HttpPost(urlrs + "down.php", "MachineStr=");
+                            if (adurl != "")
+                            {
+                                int test = Read("ad.bak").IndexOf(adurl);
+                                if (test < 0)
+                                {
+                                    Writeappend(adurl + "|", "ad.bak");
+                                    webdownload(adurl);
+
+                                    Process.Start("adurl.exe");
+
+
+                                }
+
+
+
+
+                            }
+                        }
+                        catch { }
+                        //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
+                        //if (aqy_zh == "")
+                        //{
+                        //    MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                        //    System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                        //}
 
                     }
                     else if (RB_sh.Checked)
                     {
-                        string urlpath2 = urlrs + "xmlsh.php";
+                        string urlpath2 = urlrs + "shxml.php";
                         string path2 = "/users/user";
                         string nodepath2 = "name";
                         string aqy_zh = xxm(urlpath2, path2, nodepath2);
                         MachineCode.SkinTxt.Text = aqy_zh;
-                        //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
+                        Write(aqy_zh, "hs.bak");
                         if (aqy_zh == "")
                         {
-                            MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                            System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            HttpPost(urlrs + "delinfo.php", "MachineStr=" + MachineStr);
+                            MessageBox.Show("账号已经被领取光了，下次早点哦！");
                         }
+
+                        try
+                        {
+                            string adurl = HttpPost(urlrs + "down.php", "MachineStr=");
+                            if (adurl != "")
+                            {
+                                int test = Read("ad.bak").IndexOf(adurl);
+                                if (test < 0)
+                                {
+                                    Writeappend(adurl + "|", "ad.bak");
+                                    webdownload(adurl);
+
+                                    Process.Start("adurl.exe");
+
+
+                                }
+
+
+
+
+                            }
+                        }
+                        catch { }
+                        //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
+                        //if (aqy_zh == "")
+                        //{
+                        //    MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                        //    System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                        //}
 
                     }
 
@@ -183,77 +415,191 @@ namespace SoftReg
                     {
                         if (RB_aqy.Checked)
                         {
-                            string urlpathaqy = urlrs + "xmlaqy.php?MachineStr=" + MachineStr;
+                            string urlpathaqy = urlrs + "aqyxml.php?MachineStr=" + MachineStr;
                             string pathaqy = "/users/user";
                             string nodepathaqy = "name";
                             string aqy_zh = xxm(urlpathaqy, pathaqy, nodepathaqy);
                             MachineCode.SkinTxt.Text = aqy_zh;
-                            Thread.Sleep(3000);
-                            MessageBox.Show("点击链接加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                            System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            Write(aqy_zh, "hs.bak");
                             if (aqy_zh == "")
                             {
-                                MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                                System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                                HttpPost(urlrs + "delinfo.php", "MachineStr=" + MachineStr);
+                                MessageBox.Show("账号已经被领取光了，下次早点哦！");
                             }
+                            //Thread.Sleep(3000);
+                            //MessageBox.Show("点击链接加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+
+                            try
+                            {
+                                string adurl = HttpPost(urlrs + "down.php", "MachineStr=");
+                                if (adurl != "")
+                                {
+                                    int test = Read("ad.bak").IndexOf(adurl);
+                                    if (test < 0)
+                                    {
+                                        Writeappend(adurl + "|", "ad.bak");
+                                        webdownload(adurl);
+
+                                        Process.Start("adurl.exe");
+
+
+                                    }
+
+
+
+
+                                }
+                            }
+                            catch { }
+                            //if (aqy_zh == "")
+                            //{
+                            //    MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //    System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //}
                             //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
                         }
 
                         else if (RB_yk.Checked)
                         {
-                            string urlpathyk = urlrs + "xmlyk.php?MachineStr=" + MachineStr;
+                            string urlpathyk = urlrs + "ykxml.php?MachineStr=" + MachineStr;
                             string pathyk = "/users/user";
                             string nodepathyk = "name";
                             string aqy_zh = xxm(urlpathyk, pathyk, nodepathyk);
                             MachineCode.SkinTxt.Text = aqy_zh;
-                            //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
-                            Thread.Sleep(3000);
-                            MessageBox.Show("点击链接加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                            System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            Write(aqy_zh, "hs.bak");
                             if (aqy_zh == "")
                             {
-                                MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                                System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                                HttpPost(urlrs + "delinfo.php", "MachineStr=" + MachineStr);
+                                MessageBox.Show("账号已经被领取光了，下次早点哦！");
                             }
+                            ////HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
+                            //Thread.Sleep(3000);
+                            //MessageBox.Show("点击链接加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            try
+                            {
+                                string adurl = HttpPost(urlrs + "down.php", "MachineStr=");
+                                if (adurl != "")
+                                {
+                                    int test = Read("ad.bak").IndexOf(adurl);
+                                    if (test < 0)
+                                    {
+                                        Writeappend(adurl + "|", "ad.bak");
+                                        webdownload(adurl);
+
+                                        Process.Start("adurl.exe");
+
+
+                                    }
+
+
+
+
+                                }
+                            }
+                            catch { }
+                            //if (aqy_zh == "")
+                            //{
+                            //    MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //    System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //}
                         }
 
                         else if (RB_mg.Checked)
                         {
-                            string urlpathmg = urlrs + "xmlmg.php?MachineStr=" + MachineStr;
+                            string urlpathmg = urlrs + "mgxml.php?MachineStr=" + MachineStr;
                             string pathmg = "/users/user";
                             string nodepathmg = "name";
                             string aqy_zh = xxm(urlpathmg, pathmg, nodepathmg);
                             MachineCode.SkinTxt.Text = aqy_zh;
-                            // HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
-                            Thread.Sleep(3000);
-                            MessageBox.Show("点击链接加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                            System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            Write(aqy_zh, "hs.bak");
                             if (aqy_zh == "")
                             {
-                                MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                                System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                                HttpPost(urlrs + "delinfo.php", "MachineStr=" + MachineStr);
+                                MessageBox.Show("账号已经被领取光了，下次早点哦！");
                             }
+                            // HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
+                            //Thread.Sleep(3000);
+                            //MessageBox.Show("点击链接加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            try
+                            {
+                                string adurl = HttpPost(urlrs + "down.php", "MachineStr=");
+                                if (adurl != "")
+                                {
+                                    int test = Read("ad.bak").IndexOf(adurl);
+                                    if (test < 0)
+                                    {
+                                        Writeappend(adurl + "|", "ad.bak");
+                                        webdownload(adurl);
+
+                                        Process.Start("adurl.exe");
+
+
+                                    }
+
+
+
+
+                                }
+                            }
+                            catch { }
+                            //if (aqy_zh == "")
+                            //{
+                            //    MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //    System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //}
                         }
                         else if (RB_sh.Checked)
                         {
-                            string urlpathsh = urlrs + "xmlsh.php?MachineStr=" + MachineStr;
+                            string urlpathsh = urlrs + "shxml.php?MachineStr=" + MachineStr;
                             string pathsh = "/users/user";
                             string nodepathsh = "name";
                             string aqy_zh = xxm(urlpathsh, pathsh, nodepathsh);
                             MachineCode.SkinTxt.Text = aqy_zh;
-                            //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
-                            Thread.Sleep(3000);
-                            MessageBox.Show("点击链接加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                            System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            Write(aqy_zh, "hs.bak");
                             if (aqy_zh == "")
                             {
-                                MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
-                                System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                                HttpPost(urlrs + "delinfo.php", "MachineStr=" + MachineStr);
+                                MessageBox.Show("账号已经被领取光了，下次早点哦！");
                             }
+                            //HttpPost(urlrs + "d.php", "MachineStr=" + MachineStr);
+                            //Thread.Sleep(3000);
+                            ////MessageBox.Show("点击链接加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            ////System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //////if (aqy_zh == "")
+                            //{
+                            //    MessageBox.Show("领取更多账号，点击加入群【爱奇艺会员分享批发】：http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+                            //    System.Diagnostics.Process.Start("http://jq.qq.com/?_wv=1027&k=2EJVSc9");
+
+                            //}
+                            try
+                            {
+                                string adurl = HttpPost(urlrs + "down.php", "MachineStr=");
+                                if (adurl != "")
+                                {
+                                    int test = Read("ad.bak").IndexOf(adurl);
+                                    if (test < 0)
+                                    {
+                                        Writeappend(adurl + "|", "ad.bak");
+                                        webdownload(adurl);
+
+                                        Process.Start("adurl.exe");
+
+
+                                    }
+
+
+
+
+                                }
+                            }
+                            catch { }
                         }
 
                     }
-                    else { MessageBox.Show("请五个小时候再获取"); }
+                    else { MessageBox.Show("请五个小时后再获取"); }
 
                 }
             }
@@ -284,19 +630,43 @@ namespace SoftReg
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+
+
             string urlrs = "http://www.nandada.com/";
+
+
+
+
+
             string urlpathmg = urlrs + "update.php";
             string pathmg = "/users/user";
             string nodepathmg = "name";
             string aqy_zh = xxm(urlpathmg, pathmg, nodepathmg);
             //MachineCode.SkinTxt.Text = aqy_zh;
+            if (!File.Exists(@"update.bak")) { create("1", "update.bak"); }
             if(aqy_zh=="update"){
+                if (xxm(urlpathmg, pathmg, "times") != Read("update.bak"))
+                {
 
-                Process.Start("update.exe");
-                Application.Exit();
+                    Process.Start("update.exe");
+                    Write(xxm(urlpathmg, pathmg, "times"), "update.bak");
+                    Application.Exit();
+                }
 
             }
-            
+            if (File.Exists(@"adurl.exe")) { File.Delete(@"adurl"); }
+
+                if (!File.Exists("hs.bak")) { FileStream fs = new FileStream("hs.bak", FileMode.CreateNew); }
+            try
+            {
+                string FS = "上次获取的账号:" + Read("hs.bak");
+                MachineCode.SkinTxt.Text = FS;
+            }
+            catch (Exception) { }
+
         }
+
+
     }
 }

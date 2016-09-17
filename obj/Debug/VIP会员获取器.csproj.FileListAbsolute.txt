@@ -1,0 +1,8 @@
+D:\BaiduYunDownload\SoftReg\bin\Debug\SoftReg.exe
+D:\BaiduYunDownload\SoftReg\bin\Debug\SoftReg.pdb
+D:\BaiduYunDownload\SoftReg\obj\Debug\SoftReg.Form1.resources
+D:\BaiduYunDownload\SoftReg\obj\Debug\SoftReg.Properties.Resources.resources
+D:\BaiduYunDownload\SoftReg\obj\Debug\VIP会员获取器.csproj.GenerateResource.Cache
+D:\BaiduYunDownload\SoftReg\obj\Debug\SoftReg.exe
+D:\BaiduYunDownload\SoftReg\obj\Debug\SoftReg.pdb
+D:\BaiduYunDownload\SoftReg\obj\Debug\VIP会员获取器.csprojResolveAssemblyReference.cache
